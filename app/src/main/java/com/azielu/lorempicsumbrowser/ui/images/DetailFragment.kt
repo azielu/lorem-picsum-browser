@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.azielu.lorempicsumbrowser.databinding.FragmentDetailBinding
-import com.azielu.lorempicsumbrowser.model.ImageData
 import com.azielu.lorempicsumbrowser.extensions.requireListener
+import com.azielu.lorempicsumbrowser.extensions.setUrlImage
+import com.azielu.lorempicsumbrowser.model.ImageData
 
 class DetailFragment : Fragment(), DetailView {
 
@@ -48,7 +49,7 @@ class DetailFragment : Fragment(), DetailView {
     }
 
     override fun loadImage(image: ImageData) {
-        binding.imageview.setBackgroundColor(image.color)
+        binding.imageView.setUrlImage(this.requireContext(), image)
         binding.textviewAuthor.text = image.author
     }
 

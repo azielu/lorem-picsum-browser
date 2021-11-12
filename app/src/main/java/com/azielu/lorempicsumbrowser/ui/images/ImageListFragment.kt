@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.databinding.FragmentListBinding
-import com.azielu.lorempicsumbrowser.model.ImageData
 import com.azielu.lorempicsumbrowser.extensions.requireListener
+import com.azielu.lorempicsumbrowser.extensions.setUrlImage
+import com.azielu.lorempicsumbrowser.model.ImageData
 
 class ImageListFragment : Fragment(), ImageListView {
 
@@ -86,7 +87,7 @@ class ImageListFragment : Fragment(), ImageListView {
         //TODO temp
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val image = images[position]
-            holder.imageView.setBackgroundColor(image.color)
+            holder.imageView.setUrlImage(holder.imageView.context, image)
             holder.imageView.setOnClickListener { listener(image) }
         }
 

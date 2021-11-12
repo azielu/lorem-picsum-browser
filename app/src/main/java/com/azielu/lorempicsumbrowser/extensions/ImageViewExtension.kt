@@ -4,13 +4,14 @@ import android.content.Context
 import android.text.TextUtils
 import android.widget.ImageView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.model.ImageData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
 fun ImageView.setUrlImage(context: Context, image: ImageData) {
         if (TextUtils.isEmpty(image.url)) {
-            setImageResource(android.R.drawable.stat_notify_error)
+            setImageResource(R.drawable.ic_loading_error)
         } else {
             val circularProgressDrawable = CircularProgressDrawable(context)
             circularProgressDrawable.strokeWidth = 5f
@@ -22,8 +23,8 @@ fun ImageView.setUrlImage(context: Context, image: ImageData) {
                 .apply(
                     RequestOptions()
                         .placeholder(circularProgressDrawable)
-                        .error(android.R.drawable.stat_notify_error)
-                        .fallback(android.R.drawable.stat_notify_error)
+                        .error(R.drawable.ic_loading_error)
+                        .fallback(R.drawable.ic_loading_error)
                 )
                 .fitCenter()
                 .into(this)

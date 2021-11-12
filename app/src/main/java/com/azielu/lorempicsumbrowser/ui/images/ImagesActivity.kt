@@ -1,7 +1,6 @@
 package com.azielu.lorempicsumbrowser.ui.images
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,10 +10,16 @@ import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.databinding.ActivityMainBinding
 import com.azielu.lorempicsumbrowser.model.ImageData
 import com.azielu.lorempicsumbrowser.model.TempGlobalImages
+import com.azielu.lorempicsumbrowser.mvp.BasePresenterActivity
+import io.reactivex.disposables.CompositeDisposable
 
-class ImagesActivity : AppCompatActivity(), ImagesContract.View,
+class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract.Presenter>(),
+    ImagesContract.View,
     ImageListFragment.ListViewListener,
     DetailFragment.DetailViewListener {
+
+    override val mvpView: ImagesContract.View = this
+    override val presenter: ImagesContract.Presenter = ImagesPresenter(CompositeDisposable())
 
     private var imageListView: ImageListView? = null
     private var detailView: DetailView? = null
@@ -49,12 +54,12 @@ class ImagesActivity : AppCompatActivity(), ImagesContract.View,
         imageListView = view
     }
 
-    override fun fetchImages() {
-        loadImages(TempGlobalImages)
-    }
-
     override fun bindView(view: DetailView) {
         detailView = view
+    }
+
+    override fun fetchImages() {
+        presenter.fetchImages()
     }
 
     override fun fetchItem(id: Int) {

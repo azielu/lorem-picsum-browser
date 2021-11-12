@@ -16,6 +16,8 @@ import com.azielu.lorempicsumbrowser.databinding.FragmentListBinding
 import com.azielu.lorempicsumbrowser.extensions.requireListener
 import com.azielu.lorempicsumbrowser.extensions.setUrlImage
 import com.azielu.lorempicsumbrowser.model.ImageData
+import com.jakewharton.rxbinding4.recyclerview.scrollStateChanges
+import io.reactivex.rxjava3.disposables.Disposable
 
 interface ImageListView {
     fun loadImages(images: List<ImageData>)
@@ -23,6 +25,7 @@ interface ImageListView {
 
 class ImageListFragment : Fragment(), ImageListView {
 
+    private lateinit var recyclerViewDisposable: Disposable
     private lateinit var imageAdapter: ImagesAdapter
     private var _binding: FragmentListBinding? = null
 
@@ -62,14 +65,31 @@ class ImageListFragment : Fragment(), ImageListView {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = GridLayoutManager(context, 2)
             adapter = imageAdapter
+            recyclerViewDisposable = scrollStateChanges()
+                .filter { isBottomScroll() }
+                .map { true }
+                .subscribe {
+                    if (it) {
+                        requireListener<ListViewListener>().fetchImages()
+                    }
+                }
         }
 
         requireListener<ListViewListener>().fetchImages()
+
+
+    }
+
+    private fun isBottomScroll(): Boolean {
+        //detect somehow is the bottom of the list to load more items
+        val linearLayoutManager = binding.recyclerView.layoutManager as GridLayoutManager
+        return linearLayoutManager.findLastCompletelyVisibleItemPosition() == imageAdapter.itemCount - 1
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        recyclerViewDisposable.dispose()
     }
 
     override fun loadImages(images: List<ImageData>) {

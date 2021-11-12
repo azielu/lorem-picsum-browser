@@ -12,9 +12,4 @@ object ImagesContract {
     interface Presenter : MvpPresenter<View> {
         fun fetchImages()
     }
-
-    interface DetailView {
-
-    }
-
 }

@@ -11,6 +11,10 @@ import com.azielu.lorempicsumbrowser.extensions.requireListener
 import com.azielu.lorempicsumbrowser.extensions.setUrlImage
 import com.azielu.lorempicsumbrowser.model.ImageData
 
+interface DetailView {
+    fun loadImage(image: ImageData)
+}
+
 class DetailFragment : Fragment(), DetailView {
 
     private var _binding: FragmentDetailBinding? = null
@@ -57,8 +61,4 @@ class DetailFragment : Fragment(), DetailView {
         fun bindView(view: DetailView)
         fun fetchItem(id: Int)
     }
-}
-
-interface DetailView {
-    fun loadImage(image: ImageData)
 }

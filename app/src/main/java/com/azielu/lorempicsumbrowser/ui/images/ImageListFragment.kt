@@ -17,6 +17,10 @@ import com.azielu.lorempicsumbrowser.extensions.requireListener
 import com.azielu.lorempicsumbrowser.extensions.setUrlImage
 import com.azielu.lorempicsumbrowser.model.ImageData
 
+interface ImageListView {
+    fun loadImages(images: List<ImageData>)
+}
+
 class ImageListFragment : Fragment(), ImageListView {
 
     private lateinit var imageAdapter: ImagesAdapter
@@ -110,7 +114,4 @@ class ImageListFragment : Fragment(), ImageListView {
     }
 }
 
-interface ImageListView {
-    fun loadImages(images: List<ImageData>)
-}
 

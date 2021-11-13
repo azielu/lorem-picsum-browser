@@ -5,4 +5,5 @@
     <string name="list_fragment_label">Images list</string>
     <string name="detail_fragment_label">Image\'s detail</string>
     <string name="author">This photo was taken by:</string>
+    <string name="share_this_image">Share this image!</string>
 </resources>

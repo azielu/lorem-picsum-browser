@@ -1,6 +1,7 @@
 package com.azielu.lorempicsumbrowser.ui.images
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +12,12 @@ import com.azielu.lorempicsumbrowser.extensions.requireListener
 import com.azielu.lorempicsumbrowser.extensions.setUrlImage
 import com.azielu.lorempicsumbrowser.model.ImageData
 
+
 interface DetailView {}
 
 class DetailFragment : Fragment(), DetailView {
 
+    private lateinit var selectedImage: ImageData
     private var _binding: FragmentDetailBinding? = null
 
     // This property is only valid between onCreateView and
@@ -34,9 +37,12 @@ class DetailFragment : Fragment(), DetailView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.getParcelable<ImageData>(KEY_IMAGE_DATA)?.let {
+        arguments?.getParcelable<ImageData>(KEY_IMAGE_DATA).let {
+            checkNotNull(it, { "Passed image cannot be null" })
+            selectedImage = it
             loadImage(it)
         }
+        binding.buttonShare.setOnClickListener { onShareButtonClicked() }
     }
 
     override fun onAttach(context: Context) {
@@ -53,6 +59,17 @@ class DetailFragment : Fragment(), DetailView {
     private fun loadImage(image: ImageData) {
         binding.imageView.setUrlImage(this.requireContext(), image)
         binding.textviewAuthor.text = image.author
+    }
+
+    private fun onShareButtonClicked() {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "Check out this photo: ${selectedImage.url}")
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     interface DetailViewListener {

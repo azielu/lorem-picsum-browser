@@ -21,12 +21,11 @@ class ImagesPresenter(
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess { currentPage++ }
                 .observeOn(AndroidSchedulers.mainThread())
-                //TODO handle error
-                .subscribe { list, error ->
-                    list?.let {
-                        view?.loadImages(list)
-                    }
-                }
+                .subscribe({ list ->
+                    view?.loadImages(list)
+                }, { error ->
+                    view?.showError(error)
+                })
         }
     }
 

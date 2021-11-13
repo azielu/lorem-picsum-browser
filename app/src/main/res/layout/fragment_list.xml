@@ -5,11 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.images.ImageListFragment">
 
-    <ProgressBar
-        android:id="@+id/loading_bar"
+    <ImageView
+        android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:visibility="visible"
-        android:background="@android:color/black"
         android:layout_height="match_parent" />
 
     <androidx.recyclerview.widget.RecyclerView

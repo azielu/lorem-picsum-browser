@@ -7,6 +7,7 @@ import com.azielu.lorempicsumbrowser.mvp.MvpView
 object ImagesContract {
     interface View : MvpView {
         fun loadImages(images : List<ImageData>)
+        fun showError(error: Throwable)
     }
 
     interface Presenter : MvpPresenter<View> {

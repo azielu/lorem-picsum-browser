@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.databinding.FragmentListBinding
 import com.azielu.lorempicsumbrowser.extensions.requireListener
@@ -21,6 +23,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 interface ImageListView {
     fun loadImages(images: List<ImageData>)
+    fun showError(error : Throwable)
 }
 
 class ImageListFragment : Fragment(), ImageListView {
@@ -54,7 +57,13 @@ class ImageListFragment : Fragment(), ImageListView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.loadingBar.isVisible = true
+        val circularProgressDrawable = CircularProgressDrawable(requireContext())
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 100f
+        circularProgressDrawable.start()
+
+        binding.progressBar.setImageDrawable(circularProgressDrawable)
+        binding.progressBar.isVisible = true
 
         imageAdapter = ImagesAdapter(
             images = mutableListOf(),
@@ -67,6 +76,9 @@ class ImageListFragment : Fragment(), ImageListView {
             val gridSize = resources.getInteger(R.integer.grid_size);
             layoutManager =
                 object : GridLayoutManager(context, gridSize) {
+                    //This code will load more pages if there is still empty space on the screen
+                    // after loading first page
+
                     override fun onLayoutCompleted(state: RecyclerView.State?) {
                         super.onLayoutCompleted(state)
 
@@ -105,8 +117,16 @@ class ImageListFragment : Fragment(), ImageListView {
     override fun loadImages(images: List<ImageData>) {
         isLoadingNewPhotos = false
         imageAdapter.addItems(images)
-        binding.loadingBar.isVisible = false
+        binding.progressBar.isVisible = false
         binding.recyclerView.isVisible = true
+    }
+
+    override fun showError(error: Throwable) {
+        isLoadingNewPhotos = false
+        binding.progressBar.setImageResource(R.drawable.ic_loading_error)
+        binding.progressBar.setOnClickListener{fetchNewImagesIfNeeded()}
+
+        Toast.makeText(requireContext(),"Error occurred while downloading images",Toast.LENGTH_SHORT ).show()
     }
 
     private class ImagesAdapter(

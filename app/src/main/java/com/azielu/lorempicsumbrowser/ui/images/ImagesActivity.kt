@@ -58,6 +58,10 @@ class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract
         imageListView?.loadImages(images)
     }
 
+    override fun showError(error: Throwable) {
+        imageListView?.showError(error)
+    }
+
     override fun bindView(view: ImageListView) {
         imageListView = view
     }

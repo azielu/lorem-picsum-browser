@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.azielu.lorempicsumbrowser.databinding.FragmentDetailBinding
 import com.azielu.lorempicsumbrowser.extensions.requireListener
@@ -40,7 +41,7 @@ class DetailFragment : Fragment(), DetailView {
         arguments?.getParcelable<ImageData>(KEY_IMAGE_DATA).let {
             checkNotNull(it, { "Passed image cannot be null" })
             selectedImage = it
-            loadImage(it)
+            loadImage()
         }
         binding.buttonShare.setOnClickListener { onShareButtonClicked() }
     }
@@ -56,9 +57,17 @@ class DetailFragment : Fragment(), DetailView {
         _binding = null
     }
 
-    private fun loadImage(image: ImageData) {
-        binding.imageView.setUrlImage(this.requireContext(), image)
-        binding.textviewAuthor.text = image.author
+    private fun loadImage() {
+        binding.imageView.setUrlImage(this.requireContext(), selectedImage, ::onImageLoadingError)
+        binding.textviewAuthor.text = selectedImage.author
+    }
+
+    private fun onImageLoadingError(){
+        Toast.makeText(requireContext(),"Error occurred while downloading image", Toast.LENGTH_SHORT ).show()
+
+        binding.imageView.setOnClickListener{
+            binding.imageView.setUrlImage(this.requireContext(), selectedImage, ::onImageLoadingError)
+        }
     }
 
     private fun onShareButtonClicked() {

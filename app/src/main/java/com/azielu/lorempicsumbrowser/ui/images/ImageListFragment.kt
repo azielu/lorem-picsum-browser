@@ -65,26 +65,34 @@ class ImageListFragment : Fragment(), ImageListView {
         binding.recyclerView.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             val gridSize = resources.getInteger(R.integer.grid_size);
-            layoutManager = GridLayoutManager(context, gridSize)
+            layoutManager =
+                object : GridLayoutManager(context, gridSize) {
+                    override fun onLayoutCompleted(state: RecyclerView.State?) {
+                        super.onLayoutCompleted(state)
+
+                        fetchNewImagesIfNeeded()
+                    }
+                }
             adapter = imageAdapter
             recyclerViewDisposable = scrollStateChanges()
-                .filter { isBottomScroll() && !isLoadingNewPhotos }
                 .map { true }
                 .subscribe {
-                    if (it) {
-                        isLoadingNewPhotos = true;
-                        requireListener<ListViewListener>().fetchImages()
-                    }
+                    fetchNewImagesIfNeeded()
                 }
         }
 
         requireListener<ListViewListener>().onImageListViewReady()
     }
 
-    private fun isBottomScroll(): Boolean {
-        //detect somehow is the bottom of the list to load more items
+    private fun fetchNewImagesIfNeeded() {
+        if (isLastItemVisible() && !isLoadingNewPhotos) {
+            isLoadingNewPhotos = true;
+            requireListener<ListViewListener>().fetchImages()
+        }
+    }
+
+    private fun isLastItemVisible(): Boolean {
         val layoutManager = binding.recyclerView.layoutManager as GridLayoutManager
-        //TODO: make sure that whole row filled with pictures
         return layoutManager.findLastCompletelyVisibleItemPosition() == imageAdapter.itemCount - 1
     }
 

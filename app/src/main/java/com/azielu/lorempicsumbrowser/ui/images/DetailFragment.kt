@@ -11,9 +11,7 @@ import com.azielu.lorempicsumbrowser.extensions.requireListener
 import com.azielu.lorempicsumbrowser.extensions.setUrlImage
 import com.azielu.lorempicsumbrowser.model.ImageData
 
-interface DetailView {
-    fun loadImage(image: ImageData)
-}
+interface DetailView {}
 
 class DetailFragment : Fragment(), DetailView {
 
@@ -36,8 +34,8 @@ class DetailFragment : Fragment(), DetailView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.getInt("id")?.let {
-            requireListener<DetailViewListener>().fetchItem(it)
+        arguments?.getParcelable<ImageData>(KEY_IMAGE_DATA)?.let {
+            loadImage(it)
         }
     }
 
@@ -52,13 +50,16 @@ class DetailFragment : Fragment(), DetailView {
         _binding = null
     }
 
-    override fun loadImage(image: ImageData) {
+    private fun loadImage(image: ImageData) {
         binding.imageView.setUrlImage(this.requireContext(), image)
         binding.textviewAuthor.text = image.author
     }
 
     interface DetailViewListener {
         fun bindView(view: DetailView)
-        fun fetchItem(id: Int)
+    }
+
+    companion object {
+        const val KEY_IMAGE_DATA = "KEY_IMAGE_DATA"
     }
 }

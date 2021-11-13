@@ -1,11 +1,12 @@
 package com.azielu.lorempicsumbrowser.model
 
-data class ImageData(val id: Int, val url: String, val author: String)
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-
-val TempGlobalImages: List<ImageData> =
-    mutableListOf<ImageData>().apply {
-        for (i in 1..100) {
-            this.add(ImageData(i, "https://picsum.photos/200?image=$i", "aaa $i"))
-        }
-    }
+@Parcelize
+data class ImageData(
+    val id: Int,
+    val author: String,
+) : Parcelable {
+    val url: String get() = "https://picsum.photos/200?image=$id"
+}

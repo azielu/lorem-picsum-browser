@@ -9,8 +9,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.databinding.ActivityMainBinding
 import com.azielu.lorempicsumbrowser.model.ImageData
-import com.azielu.lorempicsumbrowser.model.TempGlobalImages
 import com.azielu.lorempicsumbrowser.mvp.BasePresenterActivity
+import com.azielu.lorempicsumbrowser.repository.ImagesRepositoryImpl
+import com.azielu.lorempicsumbrowser.usecase.FetchPhotosUseCase
+import com.azielu.lorempicsumbrowser.util.SharedPreferancesCache
 import io.reactivex.disposables.CompositeDisposable
 
 class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract.Presenter>(),
@@ -19,7 +21,13 @@ class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract
     DetailFragment.DetailViewListener {
 
     override val mvpView: ImagesContract.View = this
-    override val presenter: ImagesContract.Presenter = ImagesPresenter(CompositeDisposable())
+
+    //TODO use dependency injection like Koin
+    override val presenter: ImagesContract.Presenter by lazy {
+        ImagesPresenter(
+            CompositeDisposable(),
+            FetchPhotosUseCase(ImagesRepositoryImpl(SharedPreferancesCache(applicationContext)))
+        )}
 
     private var imageListView: ImageListView? = null
     private var detailView: DetailView? = null
@@ -59,15 +67,15 @@ class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract
     }
 
     override fun fetchImages() {
-        presenter.fetchImages()
+        presenter.fetchMoreImages()
     }
 
-    override fun fetchItem(id: Int) {
-        detailView?.loadImage(TempGlobalImages.first { it.id == id })
+    override fun onImageListViewReady() {
+        presenter.fetchFirstImages()
     }
 
     override fun onItemClicked(item: ImageData) {
-        val bundle = bundleOf("id" to item.id)
+        val bundle = bundleOf(DetailFragment.KEY_IMAGE_DATA to item)
         findNavController(R.id.nav_host_fragment_content_main)
             .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
     }

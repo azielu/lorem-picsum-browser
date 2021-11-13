@@ -1,22 +1,37 @@
 package com.azielu.lorempicsumbrowser.ui.images
 
-import com.azielu.lorempicsumbrowser.model.TempGlobalImages
 import com.azielu.lorempicsumbrowser.mvp.BasePresenter
+import com.azielu.lorempicsumbrowser.usecase.FetchPhotosUseCase
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
-class ImagesPresenter(compositeDisposable: CompositeDisposable?) :
+class ImagesPresenter(
+    compositeDisposable: CompositeDisposable?,
+    private val fetchPhotosUseCase: FetchPhotosUseCase
+) :
     BasePresenter<ImagesContract.View>(compositeDisposable),
     ImagesContract.Presenter {
 
-    private var lastImageIndex = 0
+    private var currentPage = 0
 
-    override fun fetchImages() {
-        val images = TempGlobalImages.take(lastImageIndex + NEW_IMAGES_PER_QUERY)
-        lastImageIndex += NEW_IMAGES_PER_QUERY
-        view?.loadImages(images)
+    override fun fetchMoreImages() {
+        disposable {
+            fetchPhotosUseCase.execute(currentPage)
+                .subscribeOn(Schedulers.io())
+                .doOnSuccess { currentPage++ }
+                .observeOn(AndroidSchedulers.mainThread())
+                //TODO handle error
+                .subscribe { list, error ->
+                    list?.let {
+                        view?.loadImages(list)
+                    }
+                }
+        }
     }
 
-    companion object {
-        const val NEW_IMAGES_PER_QUERY = 10;
+    override fun fetchFirstImages() {
+        currentPage = 0
+        fetchMoreImages()
     }
 }

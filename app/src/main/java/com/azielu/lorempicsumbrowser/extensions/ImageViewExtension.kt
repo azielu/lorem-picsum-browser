@@ -7,6 +7,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.azielu.lorempicsumbrowser.R
 import com.azielu.lorempicsumbrowser.model.ImageData
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 
 fun ImageView.setUrlImage(context: Context, image: ImageData) {
@@ -20,6 +21,7 @@ fun ImageView.setUrlImage(context: Context, image: ImageData) {
 
             Glide.with(context)
                 .load(image.url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .apply(
                     RequestOptions()
                         .placeholder(circularProgressDrawable)

@@ -56,7 +56,7 @@ class ImageListFragment : Fragment(), ImageListView {
         binding.loadingBar.isVisible = true
 
         imageAdapter = ImagesAdapter(
-            images = emptyList(),
+            images = mutableListOf(),
             listener = { item: ImageData ->
                 requireListener<ListViewListener>().onItemClicked(item)
             })
@@ -75,15 +75,14 @@ class ImageListFragment : Fragment(), ImageListView {
                 }
         }
 
-        requireListener<ListViewListener>().fetchImages()
-
-
+        requireListener<ListViewListener>().onImageListViewReady()
     }
 
     private fun isBottomScroll(): Boolean {
         //detect somehow is the bottom of the list to load more items
-        val linearLayoutManager = binding.recyclerView.layoutManager as GridLayoutManager
-        return linearLayoutManager.findLastCompletelyVisibleItemPosition() == imageAdapter.itemCount - 1
+        val layoutManager = binding.recyclerView.layoutManager as GridLayoutManager
+        //TODO: make sure that whole row filled with pictures
+        return layoutManager.findLastCompletelyVisibleItemPosition() == imageAdapter.itemCount - 1
     }
 
     override fun onDestroyView() {
@@ -93,13 +92,13 @@ class ImageListFragment : Fragment(), ImageListView {
     }
 
     override fun loadImages(images: List<ImageData>) {
-        imageAdapter.updateItems(images)
+        imageAdapter.addItems(images)
         binding.loadingBar.isVisible = false
         binding.recyclerView.isVisible = true
     }
 
     private class ImagesAdapter(
-        var images: List<ImageData>,
+        var images: MutableList<ImageData>,
         val listener: (ImageData) -> Unit
     ) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -108,7 +107,6 @@ class ImageListFragment : Fragment(), ImageListView {
                 .inflate(R.layout.item_image, parent, false)
         )
 
-        //TODO temp
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val image = images[position]
             holder.imageView.setUrlImage(holder.imageView.context, image)
@@ -117,9 +115,10 @@ class ImageListFragment : Fragment(), ImageListView {
 
         override fun getItemCount() = images.size
 
-        fun updateItems(newImages: List<ImageData>) {
-            images = newImages
-            notifyDataSetChanged()
+        fun addItems(newImages: List<ImageData>) {
+            val lastOldItemIndex = images.count() - 1
+            images.addAll(newImages)
+            notifyItemRangeInserted(lastOldItemIndex + 1, newImages.count())
         }
     }
 
@@ -130,6 +129,7 @@ class ImageListFragment : Fragment(), ImageListView {
     interface ListViewListener {
         fun bindView(view: ImageListView)
         fun fetchImages()
+        fun onImageListViewReady()
         fun onItemClicked(item: ImageData)
     }
 }

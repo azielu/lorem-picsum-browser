@@ -10,6 +10,7 @@ object ImagesContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun fetchImages()
+        fun fetchMoreImages()
+        fun fetchFirstImages()
     }
 }

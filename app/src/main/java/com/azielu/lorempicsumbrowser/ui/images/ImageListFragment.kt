@@ -28,6 +28,7 @@ class ImageListFragment : Fragment(), ImageListView {
     private lateinit var recyclerViewDisposable: Disposable
     private lateinit var imageAdapter: ImagesAdapter
     private var _binding: FragmentListBinding? = null
+    private var isLoadingNewPhotos: Boolean = false
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -66,10 +67,11 @@ class ImageListFragment : Fragment(), ImageListView {
             layoutManager = GridLayoutManager(context, 2)
             adapter = imageAdapter
             recyclerViewDisposable = scrollStateChanges()
-                .filter { isBottomScroll() }
+                .filter { isBottomScroll() && !isLoadingNewPhotos }
                 .map { true }
                 .subscribe {
                     if (it) {
+                        isLoadingNewPhotos = true;
                         requireListener<ListViewListener>().fetchImages()
                     }
                 }
@@ -92,6 +94,7 @@ class ImageListFragment : Fragment(), ImageListView {
     }
 
     override fun loadImages(images: List<ImageData>) {
+        isLoadingNewPhotos = false
         imageAdapter.addItems(images)
         binding.loadingBar.isVisible = false
         binding.recyclerView.isVisible = true

@@ -64,7 +64,8 @@ class ImageListFragment : Fragment(), ImageListView {
 
         binding.recyclerView.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            layoutManager = GridLayoutManager(context, 2)
+            val gridSize = resources.getInteger(R.integer.grid_size);
+            layoutManager = GridLayoutManager(context, gridSize)
             adapter = imageAdapter
             recyclerViewDisposable = scrollStateChanges()
                 .filter { isBottomScroll() && !isLoadingNewPhotos }

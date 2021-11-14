@@ -7,6 +7,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.azielu.lorempicsumbrowser.R
+import com.azielu.lorempicsumbrowser.api.ApiInterface
 import com.azielu.lorempicsumbrowser.databinding.ActivityMainBinding
 import com.azielu.lorempicsumbrowser.model.ImageData
 import com.azielu.lorempicsumbrowser.mvp.BasePresenterActivity
@@ -26,8 +27,14 @@ class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract
     override val presenter: ImagesContract.Presenter by lazy {
         ImagesPresenter(
             CompositeDisposable(),
-            FetchPhotosUseCase(ImagesRepositoryImpl(SharedPreferancesCache(applicationContext)))
-        )}
+            FetchPhotosUseCase(
+                ImagesRepositoryImpl(
+                    ApiInterface.create(),
+                    SharedPreferancesCache(applicationContext)
+                )
+            )
+        )
+    }
 
     private var imageListView: ImageListView? = null
     private var detailView: DetailView? = null

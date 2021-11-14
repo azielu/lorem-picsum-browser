@@ -13,7 +13,9 @@ interface ImagesRepository {
     fun getImages(page: Int): Single<List<ImageData>>
 }
 
-internal class ImagesRepositoryImpl(private val cache: Cache) : ImagesRepository {
+internal class ImagesRepositoryImpl(
+    private val api : ApiInterface,
+    private val cache: Cache) : ImagesRepository {
 
     override fun getImages(page: Int): Single<List<ImageData>> {
         return Single.fromObservable(
@@ -28,7 +30,7 @@ internal class ImagesRepositoryImpl(private val cache: Cache) : ImagesRepository
 
     private fun getRealPageObservable(page: Int): Observable<List<ImageData>> {
         //LoremPicsum iterates pages from 1
-        return ApiInterface.create().getImages(page + 1)
+        return api.getImages(page + 1)
             .map { list ->
                 list.map {
                     ImageData(it.id, it.author)

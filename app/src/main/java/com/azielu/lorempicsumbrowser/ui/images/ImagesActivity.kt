@@ -7,14 +7,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.azielu.lorempicsumbrowser.R
-import com.azielu.lorempicsumbrowser.api.ApiInterface
 import com.azielu.lorempicsumbrowser.databinding.ActivityMainBinding
 import com.azielu.lorempicsumbrowser.model.ImageData
 import com.azielu.lorempicsumbrowser.mvp.BasePresenterActivity
-import com.azielu.lorempicsumbrowser.repository.ImagesRepositoryImpl
-import com.azielu.lorempicsumbrowser.usecase.FetchPhotosUseCase
-import com.azielu.lorempicsumbrowser.util.SharedPreferancesCache
-import io.reactivex.disposables.CompositeDisposable
+import org.koin.android.ext.android.inject
 
 class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract.Presenter>(),
     ImagesContract.View,
@@ -22,19 +18,7 @@ class ImagesActivity : BasePresenterActivity<ImagesContract.View, ImagesContract
     DetailFragment.DetailViewListener {
 
     override val mvpView: ImagesContract.View = this
-
-    //TODO use dependency injection like Koin
-    override val presenter: ImagesContract.Presenter by lazy {
-        ImagesPresenter(
-            CompositeDisposable(),
-            FetchPhotosUseCase(
-                ImagesRepositoryImpl(
-                    ApiInterface.create(),
-                    SharedPreferancesCache(applicationContext)
-                )
-            )
-        )
-    }
+    override val presenter: ImagesContract.Presenter by inject()
 
     private var imageListView: ImageListView? = null
     private var detailView: DetailView? = null

@@ -10,7 +10,7 @@ interface Cache {
     fun saveToCache(key: String, data: List<ImageData>)
 }
 
-class SharedPreferancesCache(context: Context) : Cache {
+class SharedPreferencesCache(context: Context) : Cache {
     private val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     override fun getFromCache(key: String): List<ImageData>? {
